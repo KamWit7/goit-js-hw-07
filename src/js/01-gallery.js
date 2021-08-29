@@ -2,37 +2,42 @@ import { galleryItems } from "./gallery-items.js"
 // Change code below this line
 
 const qs = (selector) => document.querySelector(selector)
-const qsa = (selector) => document.querySelectorAll(selector)
-
 const gallery = qs(".gallery")
 
-const createLightBox = (e) => { }
+const setPhoto = (photo, e) => (e.target.src = photo)
+const keyClose = (e, instance) => {
+  if ("Escape" === e.key) {
+    instance.close()
+  }
+}
 
-function lightBox() {
-  let galleryLinks = qsa(".gallery__link")
+function eveDelegationLightBox() {
+  const createBox = (event) => {
+    event.preventDefault()
 
-  galleryLinks.forEach((ele) => {
-    ele.addEventListener("click", (e) => {
-      e.preventDefault()
+    let smallPhoto = event.target.src
+    let bigPhoto = event.target.dataset.source
 
-      let bigPhoto = ele.href
-      let smallPhoto = ele.firstElementChild.src
-      ele.firstElementChild.src = bigPhoto
-
-      basicLightbox
-        .create(`<img width="1400" height="900" src="${bigPhoto}">`, {
-          onClose: () => {
-            ele.firstElementChild.src = smallPhoto
-            return true
-          },
-        })
-        .show()
-    })
-  })
+    basicLightbox
+      .create(`<img width="1400" height="900" src="${bigPhoto}">`, {
+        onClose: (instance) => {
+          setPhoto(smallPhoto, event)
+          gallery.removeEventListener("keydown", (e) => keyClose(e, instance))
+          return true
+        },
+        onShow: (instance) => {
+          setPhoto(bigPhoto, event)
+          gallery.addEventListener("keydown", (e) => keyClose(e, instance))
+          return true
+        },
+      })
+      .show()
+  }
+  gallery.addEventListener("click", createBox)
 }
 
 const createGalery = () => {
-  return galleryItems.map((ele) => {
+  const galleryArray = galleryItems.map((ele) => {
     const { preview, original, description } = ele
     let galleryItem = `  
             <a class="gallery__link" href="${original}">
@@ -45,13 +50,38 @@ const createGalery = () => {
             </a>`
     return galleryItem
   })
+  return galleryArray.join("")
 }
 
 function defaultGalery() {
-  gallery.innerHTML = createGalery().join("")
-  lightBox()
+  gallery.innerHTML = createGalery()
+  eveDelegationLightBox()
+  // lightBox()
 }
 
 defaultGalery()
 
-// działą to w jedną stronę
+// Deomo version
+// const qsa = (selector) => document.querySelectorAll(selector)
+// function lightBox() {
+//   let galleryLinks = qsa(".gallery__link")
+
+//   galleryLinks.forEach((ele) => {
+//     ele.addEventListener("click", (e) => {
+//       e.preventDefault()
+
+//       let bigPhoto = ele.href
+//       let smallPhoto = ele.firstElementChild.src
+//       ele.firstElementChild.src = bigPhoto
+
+//       basicLightbox
+//         .create(`<img width="1400" height="900" src="${bigPhoto}">`, {
+//           onClose: () => {
+//             ele.firstElementChild.src = smallPhoto
+//             return true
+//           },
+//         })
+//         .show()
+//     })
+//   })
+// }
