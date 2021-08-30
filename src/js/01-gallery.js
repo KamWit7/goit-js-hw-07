@@ -1,5 +1,5 @@
 import { galleryItems } from "./gallery-items.js"
-// Change code below this line
+import { createGalery } from "./gallery-create.js"
 
 const qs = (selector) => document.querySelector(selector)
 const gallery = qs(".gallery")
@@ -35,11 +35,8 @@ function eveDelegationLightBox() {
   }
   gallery.addEventListener("click", createBox)
 }
-
-const createGalery = () => {
-  const galleryArray = galleryItems.map((ele) => {
-    const { preview, original, description } = ele
-    let galleryItem = `  
+const query = ({ preview, original, description }) => {
+  return  `  
             <a class="gallery__link" href="${original}">
             <img
             class="gallery__image"
@@ -48,13 +45,10 @@ const createGalery = () => {
             alt="${description}"
             />
             </a>`
-    return galleryItem
-  })
-  return galleryArray.join("")
 }
 
 function defaultGalery() {
-  gallery.innerHTML = createGalery()
+  gallery.innerHTML = createGalery(galleryItems, query)
   eveDelegationLightBox()
   // lightBox()
 }
